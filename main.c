@@ -92,6 +92,74 @@ usage(int exit_code)
  * Process options from an argv array.  If from_env is non-zero we're
  * handling options from MAKEFLAGS so skip '-C', '-f', '-p' and '-x'.
  */
+
+#if defined(_WIN32) || defined(_WIN64)
+
+#include "args.h"
+
+static uint32_t process_options(int argc, char **argv, int from_env) {
+    args_set(argc, argv, (void*)0);
+    uint32_t flags = 0;
+    const char* dir = args_option_str("-C");
+    if (dir) {
+        if (posix) { error("-C not allowed"); }
+        if (chdir(dir) == -1) {
+            error("chdir(%s) failed: %s", dir, strerror(errno));
+        }
+        flags |= OPT_C;
+    }
+    const char* fn = args_option_str("-f");
+    if (fn) { // // Alternate file name
+        makefiles = newfile((char*)fn, makefiles);
+        flags |= OPT_f;
+    }
+    if (args_option_bool("-e")) {
+        flags |= OPT_e;
+    }
+    if (args_option_bool("-h")) { // Print usage message and exit
+        if (posix) { error("-h not allowed"); }
+        usage(0);
+    }
+    if (args_option_bool("-i")) { // Prefer env vars to macros in makefiles
+        flags |= OPT_i;
+    }
+    int64_t jobs = 0;
+    if (args_option_int("-j", & jobs)) { // Jobs
+        flags |= OPT_j;
+        char text[64] = {0};
+        snprintf(text, sizeof(text) - 1, "%lld", jobs);
+        numjobs = xstrdup(text);
+    }
+    if (args_option_bool("-k")) { // Continue on error
+        flags |=  OPT_k;
+        flags &= ~OPT_S;
+    }
+    if (args_option_bool("-n")) { // Pretend mode
+        flags |= OPT_n;
+    }
+    if (args_option_bool("-p")) {
+        if (!from_env) { flags |= OPT_p; }
+    }
+    if (args_option_bool("-q")) { flags |= OPT_q; }
+    if (args_option_bool("-r")) { flags |= OPT_r; }
+    if (args_option_bool("-t")) { flags |= OPT_t; }
+    if (args_option_bool("-s")) { flags |= OPT_s; } // Silent
+    if (args_option_bool("-S")) { // Stop on error
+        flags |= OPT_S;
+        flags &= ~OPT_k;
+    }
+    const char* x_pragma = args_option_str("-x");
+    if (x_pragma) {
+        if (!from_env) {
+            set_pragma(x_pragma);
+            flags |= OPT_x;
+        }
+    }
+    return flags;
+}
+
+#else
+
 static uint32_t
 process_options(int argc, char **argv, int from_env)
 {
@@ -193,6 +261,8 @@ process_options(int argc, char **argv, int from_env)
 	}
 	return flags;
 }
+
+#endif
 
 /*
  * Split the contents of MAKEFLAGS into an argv array.  If the return
@@ -531,9 +601,17 @@ main(int argc, char **argv)
 
 	// Process options from the command line
 	opts |= process_options(argc, argv, FALSE);
+#if defined(_WIN32) || defined(_WIN64)
+    argv = args.v;
+    argc = args.c;
+    argv++;
+#else
 	argv += optind;
+#endif
 
+#if !defined(WIN32) && !defined(WIN64)
 	init_signal(SIGHUP);
+#endif
 	init_signal(SIGTERM);
 
 	setmacro("$", "$", 0 | M_VALID);
@@ -576,7 +654,7 @@ main(int argc, char **argv)
 		do {
 			len += 256;
 			cwd = xrealloc(cwd, len);
-			if (getcwd(cwd, len)) {
+			if (getcwd(cwd, (int)len)) {
 				if (!useenv) {
 					// Export cwd to environment, if necessary
 					char *envcwd = getenv("CURDIR");

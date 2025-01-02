@@ -612,7 +612,7 @@ readline(FILE *fd, int want_command)
 
 		// Keep going if newline has been escaped
 		if (p != str && p[-1] == '\\') {
-			pos = p - str + 1;
+			pos = (int)(p - str + 1);
 			continue;
 		}
 		dispno = lineno;
@@ -772,7 +772,7 @@ process_command(char *s)
 #endif
 
 #if ENABLE_FEATURE_MAKE_POSIX_2024
-	len = strlen(s) + 1;
+	len = (int)strlen(s) + 1;
 	outside = xmalloc(len);
 	memset(outside, 0, len);
 	for (t = skip_macro(s); *t; t = skip_macro(t + 1)) {
@@ -819,10 +819,13 @@ run_command(const char *cmd)
 	char *s, *val = NULL;
 	char buf[256];
 	size_t len = 0, nread;
-
+    #if defined(_WIN32) || defined(_WIN64)
+	if ((fd = _popen(cmd, "r")) == NULL)
+		return val;
+    #else
 	if ((fd = popen(cmd, "r")) == NULL)
 		return val;
-
+    #endif
 	for (;;) {
 		nread = fread(buf, 1, sizeof(buf), fd);
 		if (nread == 0)
@@ -833,8 +836,11 @@ run_command(const char *cmd)
 		len += nread;
 		val[len] = '\0';
 	}
-	pclose(fd);
-
+    #if defined(_WIN32) || defined(_WIN64)
+    _pclose(fd);
+    #else
+    pclose(fd);
+    #endif
 	if (val == NULL)
 		return val;
 
@@ -1257,7 +1263,7 @@ input(FILE *fd, int ilevel)
 			nfile = 1;
 			files = &p;
 			if (!posix && wildcard(p, &gd)) {
-				nfile = gd.gl_pathc;
+				nfile = (int)gd.gl_pathc;
 				files = gd.gl_pathv;
 			}
 			for (i = 0; i < nfile; ++i) {
@@ -1295,7 +1301,7 @@ input(FILE *fd, int ilevel)
 			nfile = 1;
 			files = &p;
 			if (!posix && wildcard(p, &gd)) {
-				nfile = gd.gl_pathc;
+				nfile = (int)gd.gl_pathc;
 				files = gd.gl_pathv;
 			}
 			for (i = 0; i < nfile; ++i)

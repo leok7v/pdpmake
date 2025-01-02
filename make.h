@@ -25,9 +25,14 @@
 #include <time.h>
 #include <unistd.h>
 
-extern char **environ;
+#if defined(WIN32) || defined (WIN64)
+#include "win32ex.h"
+#define NORETURN __declspec(noreturn)
+#else
+#define NORETURN __attribute__((__noreturn__))
+#endif
 
-#define NORETURN __attribute__ ((__noreturn__))
+extern char **environ;
 
 // Resetting getopt(3) is hopelessly platform-dependent.  If command
 // line options don't work as expected you may need to tweak this.
@@ -344,9 +349,12 @@ void freerules(struct rule *rp);
 void set_pragma(const char *name);
 void addrule(struct name *np, struct depend *dp, struct cmd *cp, int flag);
 void diagnostic(const char *msg, ...);
-void error(const char *msg, ...) NORETURN;
-void error_unexpected(const char *s) NORETURN;
-void error_in_inference_rule(const char *s) NORETURN;
+NORETURN
+void error(const char *msg, ...);
+NORETURN
+void error_unexpected(const char *s);
+NORETURN
+void error_in_inference_rule(const char *s);
 void error_not_allowed(const char *s, const char *t);
 void warning(const char *msg, ...);
 void *xmalloc(size_t len);

@@ -113,7 +113,7 @@ setmacro(const char *name, const char *val, int level)
 #if ENABLE_FEATURE_MAKE_EXTENSIONS || ENABLE_FEATURE_MAKE_POSIX_2024
 	mp->m_immediate = immediate;
 #endif
-	mp->m_level = level;
+	mp->m_level = (uint8_t)level;
 	mp->m_val = xstrdup(val ? val : "");
 }
 

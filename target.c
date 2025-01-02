@@ -297,7 +297,7 @@ set_pragma(const char *name)
 				// POSIX level is stored in a separate variable.
 				// No bits in 'pragma' are used.
 				if (posix_level == DEFAULT_POSIX_LEVEL) {
-					posix_level = i - BIT_POSIX_2017;
+					posix_level = (uint8_t)(i - BIT_POSIX_2017);
 					if (posix_level > STD_POSIX_2024)
 						posix_level = STD_POSIX_2024;
 				} else if (posix_level != i - BIT_POSIX_2017)

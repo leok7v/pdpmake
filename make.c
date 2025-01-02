@@ -99,9 +99,12 @@ docmds(struct name *np, struct cmd *cp)
 			int status;
 			char *cmd = !signore IF_FEATURE_MAKE_EXTENSIONS(&& posix) ?
 							xconcat3("set -e;", q, "") : q;
-
 			target = np;
+            #if defined(WIN32) || defined(WIN64)
+			status = win32_system_via_sh(cmd);
+            #else
 			status = system(cmd);
+            #endif
 			if (!signore IF_FEATURE_MAKE_EXTENSIONS(&& posix))
 				free(cmd);
 			// If this command was being run to create an include file
@@ -251,7 +254,7 @@ make(struct name *np, int level)
 	struct depend *dp;
 	struct rule *rp;
 	struct name *impdep = NULL;	// implicit prerequisite
-	struct rule imprule;
+	struct rule imprule = {0};
 	struct cmd *sc_cmd = NULL;	// commands for single-colon rule
 	char *oodate = NULL;
 #if ENABLE_FEATURE_MAKE_POSIX_2024
@@ -346,7 +349,7 @@ make(struct name *np, int level)
 				rp->r_dep = imprule.r_dep;
 				rp->r_cmd = imprule.r_cmd;
 			}
-			// A rule with no prerequisities is executed unconditionally.
+			// A rule with no prerequisites is executed unconditionally.
 			if (!rp->r_dep)
 				dtim = np->n_tim;
 			// Reset flag to detect duplicate prerequisites

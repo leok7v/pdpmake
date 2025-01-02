@@ -89,7 +89,7 @@ arsearch(FILE *fd, const char *member)
 			mtime = argetnum(hdr.ar_date, sizeof(hdr.ar_date));
 			break;
 		}
-	} while (fseek(fd, len, SEEK_CUR) == 0);
+	} while (fseek(fd, (long)len, SEEK_CUR) == 0);
 	free(names);
 	return mtime;
 }
@@ -165,8 +165,14 @@ modtime(struct name *np)
 		np->n_tim.tv_sec = 0;
 		np->n_tim.tv_nsec = 0;
 	} else {
+        #if defined(_WIN32) || defined(_WIN64)
+        // TODO: epoch and nanoseconds on Win32
+		np->n_tim.tv_sec  = info.st_mtime;
+		np->n_tim.tv_nsec = 0;
+        #else
 		np->n_tim.tv_sec = info.st_mtim.tv_sec;
 		np->n_tim.tv_nsec = info.st_mtim.tv_nsec;
+        #endif
 	}
 	free(name);
 }
