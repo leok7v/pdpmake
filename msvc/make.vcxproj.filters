@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\make.h" />
+    <ClInclude Include="..\win32posix\ar.h">
+      <Filter>win32posix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\win32posix\glob.h">
+      <Filter>win32posix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\win32posix\libgen.h">
+      <Filter>win32posix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\win32posix\strings.h">
+      <Filter>win32posix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\win32posix\unistd.h">
+      <Filter>win32posix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\win32posix\sys\cdefs.h">
+      <Filter>win32posix\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="..\win32posix\sys\wait.h">
+      <Filter>win32posix\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="..\win32posix\args.h">
+      <Filter>win32posix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\win32posix\win32ex.h">
+      <Filter>win32posix</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="win32posix">
+      <UniqueIdentifier>{39ca7733-73d4-459d-98c3-f8872fc7d550}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win32posix\sys">
+      <UniqueIdentifier>{bfcdb101-bdbe-47b9-82f4-0d8c0383fdc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win32">
+      <UniqueIdentifier>{6843d324-ecce-444b-8b00-da5532f960cb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\make.c" />
+    <ClCompile Include="..\check.c" />
+    <ClCompile Include="..\input.c" />
+    <ClCompile Include="..\macro.c" />
+    <ClCompile Include="..\main.c" />
+    <ClCompile Include="..\modtime.c" />
+    <ClCompile Include="..\target.c" />
+    <ClCompile Include="..\utils.c" />
+    <ClCompile Include="..\win32posix\glob.c">
+      <Filter>win32posix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\win32posix\realpath.c">
+      <Filter>win32posix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rules.c" />
+    <ClCompile Include="..\win32posix\args.c">
+      <Filter>win32posix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\win32posix\win32ex.c">
+      <Filter>win32posix</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="make.rc">
+      <Filter>win32</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="version.rc">
+      <Filter>win32</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="common.props">
+      <Filter>win32</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="make.ico">
+      <Filter>win32</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="manifest.xml">
+      <Filter>win32</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

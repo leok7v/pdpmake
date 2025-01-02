@@ -1,0 +1,18 @@
+﻿#ifdef RC_INVOKED
+#ifndef _INC_WINDOWS
+#define _INC_WINDOWS
+#include "winres.h"
+#endif
+#endif
+
+1 RT_MANIFEST "manifest.xml"
+101 ICON "make.ico"
+
+#define company_name "Dmitry `Leo` Kuznetsov"
+#define copyright "Copyright (C) 2025 Leo Kuznetsov. All rights reserved."
+#define file_description "Public Domain Posix make"
+#define original_file_name "make.exe"
+#define product_name "make"
+
+#include "version.rc"
+
